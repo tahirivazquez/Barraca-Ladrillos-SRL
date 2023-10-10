@@ -6,10 +6,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const cart = document.getElementById("cart");
     const totalSpan = document.getElementById("total-price");
     const buyButton = document.getElementById("buy-button");
-    const cashButton = document.getElementById("cash-button");
-    const creditButton = document.getElementById("credit-button");
-    const debitButton = document.getElementById("debit-button");
     const removeButtons = document.querySelectorAll(".remove-button");
+    const paymentMethodRadio = document.getElementsByName("payment-method");
 
     let productos = []; // Almacenará los productos cargados desde el JSON.
     let cartItems = []; // Almacenará los productos seleccionados en el carrito.
@@ -43,23 +41,15 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // Cambiar el método de pago a efectivo
-    cashButton.addEventListener("click", function () {
-        paymentMethod = "cash";
-        updateTotal();
+    // Cambiar el método de pago cuando se selecciona un radio input
+    paymentMethodRadio.forEach(input => {
+        input.addEventListener("change", function () {
+            paymentMethod = input.value;
+            updateTotal();
+        });
     });
 
-    // Cambiar el método de pago a crédito
-    creditButton.addEventListener("click", function () {
-        paymentMethod = "credit";
-        updateTotal();
-    });
-
-    // Cambiar el método de pago a débito
-    debitButton.addEventListener("click", function () {
-        paymentMethod = "debit";
-        updateTotal();
-    });
+    // ...
 
     // Actualizar el total cuando se cambia el método de pago
     function updateTotal() {
@@ -69,8 +59,11 @@ document.addEventListener("DOMContentLoaded", function () {
         } else if (paymentMethod === "credit") {
             totalPrice *= 1.07; // Aplicar aumento del 7% para pago con crédito.
         }
-        totalSpan.textContent = totalPrice.toFixed(2); // Mostrar el total con dos decimales.
+        totalSpan.textContent = `Total de la compra: $${totalPrice.toFixed(2)}`; // Mostrar el total con dos decimales.
     }
+
+// ...
+
 
     function performSearch() {
         const searchTerm = searchInput.value.toLowerCase();
@@ -170,7 +163,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 existingCartItem.quantity++;
                 // Actualizar el stock del producto en el JSON
                 producto.cantidad--;
-                displayAllProducts(productos); // Actualizar la lista de productos disponibles
+                // Actualizar la lista de productos disponibles
+                displayAllProducts(productos);
             } else {
                 alert("No hay suficiente cantidad en el stock.");
             }
@@ -185,13 +179,17 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
                 // Actualizar el stock del producto en el JSON
                 producto.cantidad--;
-                displayAllProducts(productos); // Actualizar la lista de productos disponibles
+                // Actualizar la lista de productos disponibles
+                displayAllProducts(productos);
             } else {
                 alert("No hay suficiente cantidad en el stock.");
             }
         }
 
+        // Actualizar el carrito
         displayCartItems();
+        // Calcular el costo total de la compra y mostrarlo
+        updateTotal();
     }
 
     // Función para mostrar los productos en el carrito
@@ -211,10 +209,6 @@ document.addEventListener("DOMContentLoaded", function () {
             cart.appendChild(cartItem);
         });
 
-        // Calcular el costo total de la compra y mostrarlo.
-        const totalPrice = calculateTotal();
-        totalSpan.textContent = totalPrice.toFixed(2); // Mostrar el total con dos decimales.
-
         // Agregar eventos de eliminación a los botones "Eliminar"
         removeButtons.forEach(button => {
             button.addEventListener("click", function () {
@@ -227,7 +221,15 @@ document.addEventListener("DOMContentLoaded", function () {
         buyButton.style.display = "block";
         buyButton.addEventListener("click", function () {
             const totalPrice = calculateTotal();
-            alert(`Total de la compra: $${totalPrice.toFixed(2)}`);
+            let finalTotal = totalPrice;
+        
+            if (paymentMethod === "cash") {
+                finalTotal *= 0.9; // Aplicar descuento del 10% para pago en efectivo.
+            } else if (paymentMethod === "credit") {
+                finalTotal *= 1.07; // Aplicar aumento del 7% para pago con crédito.
+            }
+        
+            alert(`Total de la compra: $${finalTotal.toFixed(2)}`);
         });
     }
 
@@ -245,8 +247,12 @@ document.addEventListener("DOMContentLoaded", function () {
             // Incrementar la cantidad en el stock del producto en el JSON
             const product = productos.find(item => item.id === productId);
             product.cantidad += removedItem.quantity;
-            displayAllProducts(productos); // Actualizar la lista de productos disponibles
-            displayCartItems(); // Actualizar el carrito
+            // Actualizar la lista de productos disponibles
+            displayAllProducts(productos);
+            // Actualizar el carrito
+            displayCartItems();
+            // Calcular el costo total de la compra y mostrarlo
+            updateTotal();
         }
     }
 

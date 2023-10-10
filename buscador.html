@@ -25,18 +25,23 @@
         </div>
         <br>
         <button id="add-to-cart-button" class="btn btn-success">Ir al Carrito</button>
-    </div>
-
-    <!-- Carrito de Compras -->
-    <div class="container mt-4">
+        <hr> <!-- Separador visual -->
         <h2>Carrito de Compras</h2>
         <div id="cart">
             <!-- Aquí se mostrarán los productos seleccionados en el carrito -->
         </div>
-        <p>Total: <span id="total-price">0.00</span> pesos</p>
-        <button id="buy-button" class="btn btn-primary">Comprar</button>
+        <div>
+            <label for="cash">Efectivo</label>
+            <input type="radio" id="cash" name="payment-method" value="cash">
+            <label for="credit">Crédito</label>
+            <input type="radio" id="credit" name="payment-method" value="credit"><br>
+        </div>
+        <div>
+            <p><span id="total-price">0.00</span></p>
+            <button id="buy-button" class="btn btn-success">COMPRAR</button>
+        </div>
     </div>
-    
+
     <script src="buscador.js"></script>
 </body>
 </html>
