@@ -3,8 +3,17 @@ document.addEventListener("DOMContentLoaded", function () {
     const searchButton = document.getElementById("search-button");
     const searchResults = document.getElementById("search-results");
     const allProducts = document.getElementById("all-products");
+    const cart = document.getElementById("cart");
+    const totalSpan = document.getElementById("total-price");
+    const buyButton = document.getElementById("buy-button");
+    const cashButton = document.getElementById("cash-button");
+    const creditButton = document.getElementById("credit-button");
+    const debitButton = document.getElementById("debit-button");
+    const removeButtons = document.querySelectorAll(".remove-button");
 
     let productos = []; // Almacenará los productos cargados desde el JSON.
+    let cartItems = []; // Almacenará los productos seleccionados en el carrito.
+    let paymentMethod = "cash"; // Método de pago predeterminado.
 
     // Cargar los productos desde el archivo JSON y manejar errores.
     fetch("products.json")
@@ -34,6 +43,35 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
+    // Cambiar el método de pago a efectivo
+    cashButton.addEventListener("click", function () {
+        paymentMethod = "cash";
+        updateTotal();
+    });
+
+    // Cambiar el método de pago a crédito
+    creditButton.addEventListener("click", function () {
+        paymentMethod = "credit";
+        updateTotal();
+    });
+
+    // Cambiar el método de pago a débito
+    debitButton.addEventListener("click", function () {
+        paymentMethod = "debit";
+        updateTotal();
+    });
+
+    // Actualizar el total cuando se cambia el método de pago
+    function updateTotal() {
+        let totalPrice = calculateTotal();
+        if (paymentMethod === "cash") {
+            totalPrice *= 0.9; // Aplicar descuento del 10% para pago en efectivo.
+        } else if (paymentMethod === "credit") {
+            totalPrice *= 1.07; // Aplicar aumento del 7% para pago con crédito.
+        }
+        totalSpan.textContent = totalPrice.toFixed(2); // Mostrar el total con dos decimales.
+    }
+
     function performSearch() {
         const searchTerm = searchInput.value.toLowerCase();
         const filteredProducts = productos.filter(producto => {
@@ -60,18 +98,29 @@ document.addEventListener("DOMContentLoaded", function () {
         results.forEach(producto => {
             const listItem = document.createElement("li");
             listItem.className = "list-group-item";
-            const productCount = getProductCount(producto.id);
+            const addButton = document.createElement("button");
+            addButton.className = "btn btn-success float-right";
+            addButton.textContent = "✔️";
+            addButton.dataset.productId = producto.id;
+
+            // Verificar si hay suficiente cantidad en el stock
+            if (producto.cantidad > 0) {
+                addButton.addEventListener("click", function () {
+                    addToCart(producto);
+                });
+            } else {
+                addButton.disabled = true; // Desactivar el botón si no hay stock.
+                addButton.title = "No hay stock disponible";
+            }
+
             listItem.innerHTML = `
                 ${producto.nombre} - Cantidad: ${producto.cantidad} - Precio: ${producto.costo.toFixed(2)} pesos
-                <span class="badge badge-primary badge-pill">${productCount}</span>
-                <button class="btn btn-success float-right" data-product-id="${producto.id}">✔️</button>
-                <button class="btn btn-danger float-right mr-2" data-product-id="${producto.id}">❌</button>
             `;
+            listItem.appendChild(addButton);
             listGroup.appendChild(listItem);
         });
 
         searchResults.appendChild(listGroup);
-        setupProductButtons(); // Configurar los botones de agregar/quitar
     }
 
     function displayAllProducts(productsToDisplay) {
@@ -85,92 +134,122 @@ document.addEventListener("DOMContentLoaded", function () {
         productsToDisplay.forEach(producto => {
             const listItem = document.createElement("li");
             listItem.className = "list-group-item";
-            const productCount = getProductCount(producto.id);
+            const addButton = document.createElement("button");
+            addButton.className = "btn btn-success float-right";
+            addButton.textContent = "✔️";
+            addButton.dataset.productId = producto.id;
+
+            // Verificar si hay suficiente cantidad en el stock
+            if (producto.cantidad > 0) {
+                addButton.addEventListener("click", function () {
+                    addToCart(producto);
+                });
+            } else {
+                addButton.disabled = true; // Desactivar el botón si no hay stock.
+                addButton.title = "No hay stock disponible";
+            }
+
             listItem.innerHTML = `
                 ${producto.nombre} - Cantidad: ${producto.cantidad} - Precio: ${producto.costo.toFixed(2)} pesos
-                <span class="badge badge-primary badge-pill">${productCount}</span>
-                <button class="btn btn-success float-right" data-product-id="${producto.id}">✔️</button>
-                <button class="btn btn-danger float-right mr-2" data-product-id="${producto.id}">❌</button>
             `;
+            listItem.appendChild(addButton);
             listGroup.appendChild(listItem);
         });
 
         allProducts.appendChild(listGroup);
-        setupProductButtons(); // Configurar los botones de agregar/quitar
     }
 
-    // Función para agregar o quitar un producto seleccionado
-    function updateProduct(productId, operation) {
-        const product = productos.find(producto => producto.id === productId);
-        if (product) {
-            const storedProducts = localStorage.getItem("selectedProducts") || "[]";
-            const selectedProducts = JSON.parse(storedProducts);
+    // Función para agregar productos al carrito
+    function addToCart(producto) {
+        const existingCartItem = cartItems.find(item => item.id === producto.id);
 
-            const existingProduct = selectedProducts.find(p => p.id === productId);
-            if (existingProduct) {
-                if (operation === "add") {
-                    existingProduct.count++;
-                } else if (operation === "remove") {
-                    if (existingProduct.count > 1) {
-                        existingProduct.count--;
-                    } else {
-                        selectedProducts.splice(selectedProducts.indexOf(existingProduct), 1);
-                    }
-                }
+        if (existingCartItem) {
+            // Verificar si hay suficiente cantidad en el stock
+            if (existingCartItem.quantity < producto.cantidad) {
+                // Si hay suficiente cantidad en el stock, aumentar la cantidad en el carrito
+                existingCartItem.quantity++;
+                // Actualizar el stock del producto en el JSON
+                producto.cantidad--;
+                displayAllProducts(productos); // Actualizar la lista de productos disponibles
             } else {
-                if (operation === "add") {
-                    product.count = 1;
-                    selectedProducts.push(product);
-                }
+                alert("No hay suficiente cantidad en el stock.");
             }
-
-            localStorage.setItem("selectedProducts", JSON.stringify(selectedProducts));
-            updateProductCounts();
+        } else {
+            // Si es un nuevo producto, agregarlo al carrito si hay suficiente cantidad en el stock
+            if (producto.cantidad > 0) {
+                cartItems.push({
+                    id: producto.id,
+                    name: producto.nombre,
+                    cost: producto.costo,
+                    quantity: 1
+                });
+                // Actualizar el stock del producto en el JSON
+                producto.cantidad--;
+                displayAllProducts(productos); // Actualizar la lista de productos disponibles
+            } else {
+                alert("No hay suficiente cantidad en el stock.");
+            }
         }
+
+        displayCartItems();
     }
 
-    // Event listeners para los botones de agregar y quitar productos
-    function setupProductButtons() {
-        const addButtons = document.querySelectorAll(".btn-success");
-        addButtons.forEach(button => {
-            button.addEventListener("click", function () {
-                const productId = button.getAttribute("data-product-id");
-                updateProduct(productId, "add");
-            });
+    // Función para mostrar los productos en el carrito
+    function displayCartItems() {
+        cart.innerHTML = ""; // Limpiar el contenido del carrito.
+
+        cartItems.forEach((item) => {
+            const cartItem = document.createElement("div");
+            cartItem.innerHTML = `
+                <div class="list-group-item">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span>${item.name} - Cantidad: ${item.quantity} - Precio: ${item.cost} pesos</span>
+                        <button class="btn btn-danger remove-button" data-productId="${item.id}">Eliminar</button>
+                    </div>
+                </div>
+            `;
+            cart.appendChild(cartItem);
         });
 
-        const removeButtons = document.querySelectorAll(".btn-danger");
+        // Calcular el costo total de la compra y mostrarlo.
+        const totalPrice = calculateTotal();
+        totalSpan.textContent = totalPrice.toFixed(2); // Mostrar el total con dos decimales.
+
+        // Agregar eventos de eliminación a los botones "Eliminar"
         removeButtons.forEach(button => {
             button.addEventListener("click", function () {
-                const productId = button.getAttribute("data-product-id");
-                updateProduct(productId, "remove");
+                const productId = button.getAttribute("data-productId");
+                removeFromCart(productId);
             });
         });
-    }
 
-    // Función para obtener la cantidad de un producto del Local Storage
-    function getProductCount(productId) {
-        const storedProducts = localStorage.getItem("selectedProducts");
-        if (storedProducts) {
-            const selectedProducts = JSON.parse(storedProducts);
-            const existingProduct = selectedProducts.find(p => p.id === productId);
-            return existingProduct ? existingProduct.count : 0;
-        }
-        return 0;
-    }
-
-    // Actualizar los contadores de productos en la lista
-    function updateProductCounts() {
-        const badgeElements = document.querySelectorAll(".badge");
-        badgeElements.forEach(badge => {
-            const productId = badge.nextElementSibling.nextElementSibling.getAttribute("data-product-id");
-            const productCount = getProductCount(productId);
-            badge.textContent = productCount;
+        // Mostrar el botón "Comprar" y su funcionalidad
+        buyButton.style.display = "block";
+        buyButton.addEventListener("click", function () {
+            const totalPrice = calculateTotal();
+            alert(`Total de la compra: $${totalPrice.toFixed(2)}`);
         });
     }
 
-    // Cargar productos seleccionados al cargar la página
-    loadSelectedProducts();
-    // Actualizar los contadores de productos
-    updateProductCounts();
+    // Función para calcular el costo total de la compra
+    function calculateTotal() {
+        return cartItems.reduce((total, item) => total + item.cost * item.quantity, 0);
+    }
+
+    // Función para eliminar un producto del carrito
+    function removeFromCart(productId) {
+        const index = cartItems.findIndex(item => item.id === productId);
+
+        if (index !== -1) {
+            const removedItem = cartItems.splice(index, 1)[0];
+            // Incrementar la cantidad en el stock del producto en el JSON
+            const product = productos.find(item => item.id === productId);
+            product.cantidad += removedItem.quantity;
+            displayAllProducts(productos); // Actualizar la lista de productos disponibles
+            displayCartItems(); // Actualizar el carrito
+        }
+    }
+
+    // Llamar a la función para mostrar los productos en el carrito al cargar la página.
+    displayCartItems();
 });
