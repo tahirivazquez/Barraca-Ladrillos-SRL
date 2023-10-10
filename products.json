@@ -1,0 +1,145 @@
+{
+    "productos": [
+      {
+        "id": "001",
+        "nombre": "Ladrillo Común",
+        "descripción": "Ladrillo de arcilla roja común utilizado en construcción.",
+        "cantidad": 100,
+        "costo": 10.99
+      },
+      {
+        "id": "002",
+        "nombre": "Ladrillo Reforzado",
+        "descripción": "Ladrillo con refuerzo interno para mayor resistencia.",
+        "cantidad": 75,
+        "costo": 12.99
+      },
+      {
+        "id": "003",
+        "nombre": "Bloque de Cemento",
+        "descripción": "Bloque de construcción hecho de cemento.",
+        "cantidad": 50,
+        "costo": 8.49
+      },
+      {
+        "id": "004",
+        "nombre": "Tejas de Terracota",
+        "descripción": "Tejas de terracota para techos.",
+        "cantidad": 30,
+        "costo": 15.75
+      },
+      {
+        "id": "005",
+        "nombre": "Cemento Portland",
+        "descripción": "Cemento Portland de alta calidad para proyectos de construcción.",
+        "cantidad": 80,
+        "costo": 7.99
+      },
+      {
+        "id": "006",
+        "nombre": "Madera Tratada",
+        "descripción": "Tablas de madera tratada para exteriores.",
+        "cantidad": 60,
+        "costo": 19.99
+      },
+      {
+        "id": "007",
+        "nombre": "Cerámica Esmaltada",
+        "descripción": "Azulejos de cerámica esmaltada para baños y cocinas.",
+        "cantidad": 45,
+        "costo": 6.25
+      },
+      {
+        "id": "008",
+        "nombre": "Hormigón Prefabricado",
+        "descripción": "Paneles de hormigón prefabricado para construcción rápida.",
+        "cantidad": 25,
+        "costo": 24.99
+      },
+      {
+        "id": "009",
+        "nombre": "Tubos de PVC",
+        "descripción": "Tubos de PVC para sistemas de fontanería.",
+        "cantidad": 70,
+        "costo": 5.49
+      },
+      {
+        "id": "010",
+        "nombre": "Cables Eléctricos",
+        "descripción": "Cables eléctricos de diferentes calibres.",
+        "cantidad": 90,
+        "costo": 3.99
+      },
+      {
+        "id": "011",
+        "nombre": "Piedra Natural",
+        "descripción": "Piedras naturales para revestimientos y decoración.",
+        "cantidad": 40,
+        "costo": 18.99
+      },
+      {
+        "id": "012",
+        "nombre": "Pintura Interior",
+        "descripción": "Pintura de interior en varios colores.",
+        "cantidad": 55,
+        "costo": 9.99
+      },
+      {
+        "id": "013",
+        "nombre": "Ventanas de Aluminio",
+        "descripción": "Ventanas de aluminio con vidrios templados.",
+        "cantidad": 35,
+        "costo": 29.99
+      },
+      {
+        "id": "014",
+        "nombre": "Tela Asfáltica",
+        "descripción": "Rollo de tela asfáltica para impermeabilización.",
+        "cantidad": 65,
+        "costo": 11.49
+      },
+      {
+        "id": "015",
+        "nombre": "Láminas de Yeso",
+        "descripción": "Láminas de yeso para paredes y techos.",
+        "cantidad": 20,
+        "costo": 7.99
+      },
+      {
+        "id": "016",
+        "nombre": "Varillas de Acero",
+        "descripción": "Varillas de acero para refuerzo estructural.",
+        "cantidad": 50,
+        "costo": 14.99
+      },
+      {
+        "id": "017",
+        "nombre": "Puertas de Madera",
+        "descripción": "Puertas de madera maciza en diferentes estilos.",
+        "cantidad": 40,
+        "costo": 49.99
+      },
+      {
+        "id": "018",
+        "nombre": "Aislante Térmico",
+        "descripción": "Paneles aislantes térmicos para construcción sostenible.",
+        "cantidad": 30,
+        "costo": 22.99
+      },
+      {
+        "id": "019",
+        "nombre": "Grifería Moderna",
+        "descripción": "Grifería de diseño para baños y cocinas.",
+        "cantidad": 60,
+        "costo": 34.99
+      },
+      {
+        "id": "020",
+        "nombre": "Césped Artificial",
+        "descripción": "Rollo de césped artificial para jardines.",
+        "cantidad": 25,
+        "costo": 19.99
+      }
+    ]
+  }
+  
