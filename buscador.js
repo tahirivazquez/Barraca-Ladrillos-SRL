@@ -155,12 +155,17 @@ document.addEventListener("DOMContentLoaded", function () {
     // Función para agregar productos al carrito
     function addToCart(producto) {
         const existingCartItem = cartItems.find(item => item.id === producto.id);
-
+    
         if (existingCartItem) {
-            // Verificar si hay suficiente cantidad en el stock
-            if (existingCartItem.quantity < producto.cantidad) {
-                // Si hay suficiente cantidad en el stock, aumentar la cantidad en el carrito
-                existingCartItem.quantity++;
+            if (producto.cantidad > 0) {
+                // Verificar si hay suficiente cantidad en el stock antes de agregar al carrito
+                cartItems.push({
+                    id: producto.id,
+                    name: producto.nombre,
+                    cost: producto.costo,
+                    quantity: 1
+                });
+    
                 // Actualizar el stock del producto en el JSON
                 producto.cantidad--;
                 // Actualizar la lista de productos disponibles
@@ -169,8 +174,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 alert("No hay suficiente cantidad en el stock.");
             }
         } else {
-            // Si es un nuevo producto, agregarlo al carrito si hay suficiente cantidad en el stock
             if (producto.cantidad > 0) {
+                // Si es un nuevo producto, agregarlo al carrito si hay suficiente cantidad en el stock
                 cartItems.push({
                     id: producto.id,
                     name: producto.nombre,
@@ -185,12 +190,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 alert("No hay suficiente cantidad en el stock.");
             }
         }
-
+    
         // Actualizar el carrito
         displayCartItems();
         // Calcular el costo total de la compra y mostrarlo
         updateTotal();
     }
+    
 
     // Función para mostrar los productos en el carrito
     function displayCartItems() {
